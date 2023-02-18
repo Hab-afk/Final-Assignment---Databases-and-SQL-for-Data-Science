@@ -1,0 +1,140 @@
+
+    Socioeconomic Indicators in Chicago
+    Chicago Public Schools
+    Chicago Crime Data
+
+%load_ext sql
+
+Problem 1
+Find the total number of crimes recorded in the CRIME table
+
+# Rows in Crime table
+
+%sql SELECT COUNT(*) AS TOTAL_CRIMES \
+      FROM CHICAGO_CRIME_DATA
+
+total_crimes
+533
+
+
+
+Problem 2
+Retrieve first 10 rows from the CRIME table
+
+%sql SELECT * FROM CHICAGO_CRIME_DATA LIMIT 10
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+Problem 3
+How many crimes involve an arrest?
+
+%sql SELECT COUNT(*) AS NUMBER_OF_ARRESTS \
+    FROM CHICAGO_CRIME_DATA \
+    WHERE ARREST = "TRUE"
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+number_of_arrests
+163
+Problem 4
+Which unique types of crimes have been recorded at GAS STATION locations?
+
+%sql SELECT DISTINCT PRIMARY_TYPE \
+    FROM CHICAGO_CRIME_DATA \
+    WHERE LOCATION_DESCRIPTION = 'GAS STATION'
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+primary_type
+CRIMINAL TRESPASS
+NARCOTICS
+ROBBERY
+THEFT
+
+Hint: Which column lists types of crimes e.g. THEFT?
+Problem 5
+In the CENUS_DATA table list all Community Areas whose names start with the letter ‘B’.
+
+%sql SELECT COMMUNITY_AREA_NAME \
+    FROM CENSUS_DATA \
+    WHERE COMMUNITY_AREA_NAME LIKE 'B%'
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+community_area_name
+Belmont Cragin
+Burnside
+Brighton Park
+Bridgeport
+Beverly
+Problem 6
+Which schools in Community Areas 10 to 15 are healthy school certified?
+
+%sql SELECT NAME_OF_SCHOOL \
+FROM CHICAGO_PUBLIC_SCHOOLS \
+WHERE COMMUNITY_AREA_NUMBER BETWEEN 10 AND 15 \
+AND HEALTHY_SCHOOL_CERTIFIED = 'Yes'
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+name_of_school
+Rufus M Hitch Elementary School
+Problem 7
+What is the average school Safety Score?
+
+%sql SELECT AVG(SAFETY_SCORE) AS AVERAGE \
+FROM CHICAGO_PUBLIC_SCHOOLS
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+average
+49.504873
+Problem 8
+List the top 5 Community Areas by average College Enrollment [number of students]
+
+%sql SELECT COMMUNITY_AREA_NAME, AVG(COLLEGE_ENROLLMENT) as Number_of_Students\
+FROM CHICAGO_PUBLIC_SCHOOLS \
+GROUP BY COMMUNITY_AREA_NAME \
+ORDER BY AVG(COLLEGE_ENROLLMENT) DESC LIMIT 5
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+community_area_name 	number_of_students
+ARCHER HEIGHTS 	2411.500000
+MONTCLARE 	1317.000000
+WEST ELSDON 	1233.333333
+BRIGHTON PARK 	1205.875000
+BELMONT CRAGIN 	1198.833333
+Problem 9
+Use a sub-query to determine which Community Area has the least value for school Safety Score?
+
+%sql SELECT COMMUNITY_AREA_NAME, SAFETY_SCORE \
+FROM CHICAGO_PUBLIC_SCHOOLS \
+WHERE SAFETY_SCORE IN \
+(SELECT MIN(SAFETY_SCORE) FROM CHICAGO_PUBLIC_SCHOOLS)
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+community_area_name 	safety_score
+WASHINGTON PARK 	1
+Problem 10
+[Without using an explicit JOIN operator] Find the Per Capita Income of the Community Area which has a school Safety Score of 1.
+
+%sql SELECT CD.COMMUNITY_AREA_NAME, CD.PER_CAPITA_INCOME \
+FROM CENSUS_DATA CD, CHICAGO_PUBLIC_SCHOOLS CPS \
+WHERE CD.COMMUNITY_AREA_NUMBER = CPS.COMMUNITY_AREA_NUMBER \
+AND CPS.SAFETY_SCORE = 1
+
+ * ibm_db_sa://mqb36773:***@dashdb-txn-sbox-yp-lon02-04.services.eu-gb.bluemix.net:50000/BLUDB
+Done.
+
+community_area_name 	per_capita_income
+Washington Park 	13785
